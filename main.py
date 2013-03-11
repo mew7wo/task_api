@@ -7,44 +7,81 @@
 
 
 import json
+from pymongo import Connection
 from flask import Flask, jsonify
 from flask import Response, request
 
 app = Flask(__name__)
 
-@app.route('/id/followed/')
+@app.route('/id/followed/', methods=['GET'])
 def id_followed():
-    pass
-
-
-@app.route('/id/books/')
+    task = make_task('followed')
+    return prepare_resp(task)
+    
+@app.route('/id/books/', methods=['GET'])
 def id_books():
-    return jsonify(msg='fuck')
+    task = make_task('books')
+    return prepare_resp(task)
 
-
-@app.route('/id/tags/')
+@app.route('/id/tags/', methods=['GET'])
 def id_tags(): 
-    pass
+    task = make_task('tags')
+    return prepare_resp(task)
+
+def make_task(task_type):
+    db = Connection(host='localhost', port=27017, network_timeout=20).doubanbook
+    rs = db.user_status.find({task_type:'free'}).limit(100)
+    ids = []
+    for cur in rs:
+#db.user_status.update(cur, {task_type:'running'})
+        ids.append(cur['_id'])
+
+    tk = {}
+    tk['ids'] = ids 
+    tk['type'] = task_type
+    
+    return tk
 
 
-@app.route('/book/tags/')
-def book_tags():
-    js = json.dumps({'tags':['abc', 'dsaf']})
-    resp = Response(js, status=200, mimetype='application/json')
-    return resp
+def prepare_resp(resp):
+    js = json.dumps(resp)
+    return Response(js, status=200, mimetype='application/json')
+    
 
-@app.route('/upload/', method=['PUT'])
+@app.route('/upload/', methods=['PUT'])
 def upload():
+    js = request.json()
+    if js['type'] == 'books':
+        return id_books_upload(js['data'])
+    elif js['type'] == 'tags':
+        return id_tags_upload(js['data'])
+    elif js['type'] == 'followed':
+        return id_followed_upload(js['data'])
+    else:
+        return id_404_upload()
+
+def id_books_upload(ary):
     pass
 
-def id_books_upload():
-    pass
+def id_tags_upload(ary):
+    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
+    for r in ary:
+        db.user_tags.insert({'_id':r['id'], 'tags':r['tags']})
+        db.user_status.update({'_id':r['id']}, {'tags':'done'})
 
-def id_tags_upload():
-    pass
+    return prepare_resp({'code':200, 'msg':'success'}) 
 
-def id_followed_upload():
-    pass
+def id_followed_upload(ary):
+    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
+    for r in ary:
+        db.user_followed.insert({'_id':r['id'], 'tags':r['tags']})
+        db.user_status.update({'_id':r['id']}, {'followed':'done'})
+
+    return prepare_resp({'code':200, 'msg':'success'})
+
+def id_404_upload():
+    return jsonify(code='404', msg='not found')
 
 if __name__ == '__main__':
     app.run(debug=True)
+
