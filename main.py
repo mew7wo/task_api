@@ -33,7 +33,7 @@ def make_task(task_type):
     rs = db.user_status.find({task_type:'free'}).limit(100)
     ids = []
     for cur in rs:
-#db.user_status.update(cur, {task_type:'running'})
+#        db.user_status.update(cur, {task_type:'running'})
         ids.append(cur['_id'])
 
     tk = {}
@@ -50,18 +50,21 @@ def prepare_resp(resp):
 
 @app.route('/upload/', methods=['PUT'])
 def upload():
-    js = request.json()
-    if js['type'] == 'books':
+    js = request.json
+    data_type = js.get('type')
+    if data_type == 'books':
         return id_books_upload(js['data'])
-    elif js['type'] == 'tags':
+    elif data_type == 'tags':
         return id_tags_upload(js['data'])
-    elif js['type'] == 'followed':
+    elif data_type == 'followed':
         return id_followed_upload(js['data'])
     else:
         return id_404_upload()
 
+
 def id_books_upload(ary):
     pass
+
 
 def id_tags_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
@@ -71,6 +74,7 @@ def id_tags_upload(ary):
 
     return prepare_resp({'code':200, 'msg':'success'}) 
 
+
 def id_followed_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for r in ary:
@@ -79,8 +83,10 @@ def id_followed_upload(ary):
 
     return prepare_resp({'code':200, 'msg':'success'})
 
+
 def id_404_upload():
-    return jsonify(code='404', msg='not found')
+    return prepare_resp({'code':404, 'msg':'not found'})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

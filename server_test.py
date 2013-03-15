@@ -28,9 +28,9 @@ class APITestCase(unittest.TestCase):
     ''' test followed api path
         test return json format
         test charset '''
-    def testFollowedAPI(self);
+    def testFollowedAPI(self):
         with app.test_request_context('/id/followed/', method='GET'):
-            self.assertEqual(request.path, '/id/followed')
+            self.assertEqual(request.path, '/id/followed/')
             
     ''' test upload api path '''
     def testUploadAPI(self):  
