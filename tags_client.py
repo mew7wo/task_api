@@ -16,10 +16,13 @@ class TagsTask():
     def __init__(self):
         logging.basicConfig(filename='error.log', filemode='a+', level=logging.ERROR)
         self.__read_info()
-        self._fetcher = Fetch()
+        self._fetcher = Fetch(username='mew7wo@gmail.com', pw='m&Oy$7Fs')
         self._url = 'https://api.douban.com/v2/book/user/%s/tags?count=100'
         self._task_url = 'http://localhost:5000/id/tags/'
         self._upload_url = 'http://localhost:5000/upload/'
+
+    def __del__(self):
+        self.__save_info()
 
     def run(self):
         while True:
@@ -34,7 +37,7 @@ class TagsTask():
 
     def __read_info(self):
         self.__reset()
-        if os.path.exists('config.cfg')
+        if os.path.exists('config.cfg'):
             with open('config.cfg', 'r') as f:
                 js = json.loads(f.read())
                 self._status = js.get('status')

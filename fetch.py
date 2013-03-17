@@ -18,12 +18,14 @@ class Fetch(object):
     ''' url fetch class '''
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1) Chrome/23.0.1271.64 Safari/537.11'}
     opener = None
-    def __init__(self):
+    def __init__(self, username, pw):
         if self.__class__.opener == None:
             cj = cookielib.CookieJar()
             http_handler = urllib2.HTTPHandler(debuglevel=1)
             self.__class__.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), http_handler)
 
+        self._username = username
+        self._pw = pw
         self.__login()
 
     def __login(self):
@@ -63,8 +65,8 @@ class Fetch(object):
             f.write(img)
 
         form_data = {}
-        form_data['form_email'] = '1398882026@qq.com'
-        form_data['form_password'] = 'liumengchao'
+        form_data['form_email'] = self._username
+        form_data['form_password'] = self._pw
         form_data['captcha-id'] = captcha_value
         form_data['captcha-solution'] = raw_input('check captcha.jpeg to get code: ')
 

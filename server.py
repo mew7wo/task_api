@@ -11,6 +11,10 @@ from pymongo import Connection
 from flask import Flask, jsonify
 from flask import Response, request
 
+MSG_200 = {'code':200, 'msg':'success'}
+MSG_404 = {'code':404, 'msg':'not found'}
+
+
 app = Flask(__name__)
 
 @app.route('/id/followed/', methods=['GET'])
@@ -45,7 +49,7 @@ def make_task(task_type):
 
 def prepare_resp(resp):
     js = json.dumps(resp)
-    return Response(js, status=200, mimetype='application/json')
+    return Response(js, status=200, mimetype='application/json;charset=utf8')
     
 
 @app.route('/upload/', methods=['PUT'])
@@ -72,7 +76,7 @@ def id_tags_upload(ary):
         db.user_tags.insert({'_id':r['id'], 'tags':r['tags']})
         db.user_status.update({'_id':r['id']}, {'tags':'done'})
 
-    return prepare_resp({'code':200, 'msg':'success'}) 
+    return prepare_resp(MSG_200) 
 
 
 def id_followed_upload(ary):
@@ -81,11 +85,11 @@ def id_followed_upload(ary):
         db.user_followed.insert({'_id':r['id'], 'tags':r['tags']})
         db.user_status.update({'_id':r['id']}, {'followed':'done'})
 
-    return prepare_resp({'code':200, 'msg':'success'})
+    return prepare_resp(MSG_200)
 
 
 def id_404_upload():
-    return prepare_resp({'code':404, 'msg':'not found'})
+    return prepare_resp(MSG_404)
 
 
 if __name__ == '__main__':
