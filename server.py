@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #coding=utf-8
-#file Name: main.py
+#file Name: server.py
 #author: mew7wo
 #mail: mew7wo@gmail.com
 #created Time: Wed 06 Mar 2013 09:24:58 PM CST
