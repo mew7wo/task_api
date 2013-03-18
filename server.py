@@ -11,9 +11,6 @@ from pymongo import Connection
 from flask import Flask, jsonify
 from flask import Response, request
 
-MSG_200 = {'code':200, 'msg':'success'}
-MSG_404 = {'code':404, 'msg':'not found'}
-
 
 app = Flask(__name__)
 
@@ -67,8 +64,16 @@ def upload():
 
 
 def id_books_upload(ary):
-    pass
+    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
+    for user in ary:
+        books = []
+        for r in user['books']:
+            books.append(r['id']) 
+            db.books.insert(r) 
+        db.user_books.insert({'_id':user['id'], 'books':books}) 
+        db.user_status.update({'_id':user['id']}, {'tags':'done'})
 
+    return prepare_resp({'code':200, 'msg':'success'})
 
 def id_tags_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
@@ -76,8 +81,7 @@ def id_tags_upload(ary):
         db.user_tags.insert({'_id':r['id'], 'tags':r['tags']})
         db.user_status.update({'_id':r['id']}, {'tags':'done'})
 
-    return prepare_resp(MSG_200) 
-
+    return prepare_resp({'code':200, 'msg':'success'}) 
 
 def id_followed_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
@@ -85,11 +89,10 @@ def id_followed_upload(ary):
         db.user_followed.insert({'_id':r['id'], 'tags':r['tags']})
         db.user_status.update({'_id':r['id']}, {'followed':'done'})
 
-    return prepare_resp(MSG_200)
-
+    return prepare_resp({'code':200, 'msg':'success'})
 
 def id_404_upload():
-    return prepare_resp(MSG_404)
+    return prepare_resp({'code':404, 'msg':'not found'})
 
 
 if __name__ == '__main__':

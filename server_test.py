@@ -42,7 +42,6 @@ class ClientTestCase(unittest.TestCase):
         self.assertEqual(js.has_key('type'), True)
         self.assertEqual(js.get('type'), 'tags')
         
-
     def test_books(self):
         req = requests.get('http://localhost:5000/id/books/')
         js = req.json()
@@ -71,7 +70,7 @@ class ClientTestCase(unittest.TestCase):
     def test_upload_tags(self):
         js = json.dumps({'type':'tags', 'data':[]}) 
         headers = {'Content-Type':'application/json; chaset=utf8'}
-        req = request.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':200, 'msg':'success'}))
 
     def test_upload_followed(self):
