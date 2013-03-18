@@ -10,6 +10,7 @@ import urllib
 import cookielib
 import requests
 import socket
+import logging
 from lxml import etree
 from time import sleep
 
@@ -18,6 +19,7 @@ class Fetch(object):
     ''' url fetch class '''
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1) Chrome/23.0.1271.64 Safari/537.11'}
     opener = None
+
     def __init__(self, username, pw):
         if self.__class__.opener == None:
             cj = cookielib.CookieJar()
@@ -31,7 +33,7 @@ class Fetch(object):
     def __login(self):
         login_url = 'http://www.douban.com/accounts/login'
         login_page = self.get(login_url)
-        post_data = self.__getPostData(login_page)
+        post_data = self.__get_post_data(login_page)
 
         login_req = urllib2.Request(login_url, data=post_data, headers=self.__class__.headers)
         login_resp = self.__get(login_req)
@@ -54,7 +56,7 @@ class Fetch(object):
         content = self.__get(req).read()
         return content
 
-    def __getPostData(self, page):
+    def __get_post_data(self, page):
         img_xpath = r'//*[@id="captcha_image"]'
         value_xpath = r'//*[@id="lzform"]/div[4]/div/div/input[2]'
         root = etree.HTML(page)
