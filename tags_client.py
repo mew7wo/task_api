@@ -16,7 +16,7 @@ class TagsTask():
     def __init__(self):
         logging.basicConfig(filename='error.log', filemode='a+', level=logging.ERROR)
         self.__read_info()
-        self._fetcher = Fetch(username='mew7wo@gmail.com', pw='m&Oy$7Fs')
+        self._fetcher = Fetch(username='1398882026@qq.com', pw='abcdefgh')
         self._url = 'https://api.douban.com/v2/book/user/%s/tags?count=100'
         self._task_url = 'http://localhost:5000/id/tags/'
         self._upload_url = 'http://localhost:5000/upload/'
