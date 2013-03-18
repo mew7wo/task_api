@@ -8,7 +8,6 @@
 import urllib2
 import urllib
 import cookielib
-import requests
 import socket
 import logging
 from lxml import etree
@@ -43,12 +42,14 @@ class Fetch(object):
 
     def __get(self, req):
         resp = None
-        try:
-            resp = self.__class__.opener.open(req)
-        except (urllib2.URLError, socket.timeout), e:
-            print repr(e)
-        finally:
-            return resp
+        while True:
+            try:
+                resp = self.__class__.opener.open(req, timeout=10)
+            except (urllib2.URLError, socket.timeout), e:
+                print str(e)
+            else:
+                break
+        return resp
 
     def get(self, url, sleeptime=None):
         if sleeptime != None: sleep(sleeptime)

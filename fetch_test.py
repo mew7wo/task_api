@@ -15,8 +15,7 @@ class FetchTestCase(unittest.TestCase):
         self.fetch = Fetch(username='1398882026@qq.com', pw='liumengchao')
 
     def test_get(self):
-        req = urllib2.Request('http://www.douban.com/update/')
-        resp = self.fetch.get(req)
+        resp = self.fetch.get('http://www.douban.com/update/')
         print resp
 
 
