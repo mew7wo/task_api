@@ -45,14 +45,15 @@ class Fetch(object):
         while True:
             try:
                 resp = self.__class__.opener.open(req, timeout=10)
-            except (urllib2.URLError, socket.timeout), e:
+            except socket.timeout, e:
                 print str(e)
             else:
                 break
         return resp
 
     def get(self, url, sleeptime=None):
-        if sleeptime != None: sleep(sleeptime)
+        if sleeptime != None: 
+            sleep(sleeptime)
         req = urllib2.Request(url, headers=self.__class__.headers)
         content = self.__get(req).read()
         return content

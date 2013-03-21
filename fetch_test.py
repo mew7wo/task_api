@@ -17,6 +17,10 @@ class FetchTestCase(unittest.TestCase):
     def test_get(self):
         resp = self.fetch.get('http://www.douban.com/update/')
         print resp
+        resp = self.fetch.get('http://www.douban.com/fdsafdsafdsa/')
+        print resp
+        resp = self.fetch.get('dajfdsoajfeowaof')
+        print resp
 
 
 def main():
