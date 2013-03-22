@@ -11,13 +11,13 @@ from pymongo import Connection
 def import_user_status(db, filename):
     with open(filename, 'r') as f:
         for line in f:
-            user = json.loads(f.rstrip('\n').decode('utf-8'))
+            user = json.loads(line.rstrip('\n').decode('utf-8'))
             db.user_status.insert(user)
 
 def import_user_followed(db, filename):
     with open(filename, 'r') as f:
         for line in f:
-            user = json.loads(f.rstrip('\n').decode('utf-8'))
+            user = json.loads(line.rstrip('\n').decode('utf-8'))
             db.user_followed.insert(user)
 
 def import_user_books(db, filename):
