@@ -14,7 +14,7 @@ from flask import Response, request
 
 app = Flask(__name__)
 
-@app.route('/test/', methods=['GET']):
+@app.route('/test/', methods=['GET'])
 def test_page():
     return prepare_resp({'code':200, 'msg':'test...'})
 
