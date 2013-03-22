@@ -18,15 +18,15 @@ def import_user_followed(db, filename):
     with open(filename, 'r') as f:
         for line in f:
             user = json.loads(f.rstrip('\n').decode('utf-8'))
-            db.user_status.insert(user)
+            db.user_followed.insert(user)
 
 def import_user_books(db, filename):
     pass
 
 def main():
-    db = Connection(host='localhost', port='27017').doubanbook
+    db = Connection(host='localhost', port=27017).doubanbook
     import_user_status(db, 'user_status.dat')
-    import_user_followed(db, 'user_status.dat')
+    import_user_followed(db, 'user_followed.dat')
 
 if __name__ == '__main__':
     main()
