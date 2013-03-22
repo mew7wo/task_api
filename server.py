@@ -14,6 +14,10 @@ from flask import Response, request
 
 app = Flask(__name__)
 
+@app.route('/test/', methods=['GET']):
+def test_page():
+    return prepare_resp({'code':200, 'msg':'test...'})
+
 @app.route('/id/followed/', methods=['GET'])
 def id_followed():
     task = make_task('followed')
