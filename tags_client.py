@@ -14,12 +14,12 @@ from fetch import Fetch
 
 class TagsTask():
     def __init__(self):
-        logging.basicConfig(filename='error.log', filemode='a+', level=logging.ERROR)
+        logging.basicConfig(filename='client_error.log', filemode='a+', level=logging.ERROR)
         self.__read_info()
-        self._fetcher = Fetch(username='1398882026@qq.com', pw='abcdefgh')
+        self._fetcher = Fetch(username='1398882026@qq.com', pw='liumengchao')
         self._url = 'https://api.douban.com/v2/book/user/%s/tags?count=100'
-        self._task_url = 'http://localhost:5000/id/tags/'
-        self._upload_url = 'http://localhost:5000/upload/'
+        self._task_url = 'http://localhost:8080/id/tags/'
+        self._upload_url = 'http://localhost:8080/upload/'
 
     def __del__(self):
         self.__save_info()
@@ -33,7 +33,7 @@ class TagsTask():
             except KeyboardInterrupt:
                 break
             except Exception, e:
-                logging.error(str(e))
+                logging.error(repr(e))
 
     def __read_info(self):
         self.__reset()
@@ -41,15 +41,15 @@ class TagsTask():
             with open('config.cfg', 'r') as f:
                 js = json.loads(f.read())
                 self._status = js.get('status')
-                self._free_task = js.get('free_task')
-                self._done_task = js.get('done_task')
+                self._free_task = set(js.get('free_task'))
+                self._done_task = set(js.get('done_task'))
 
     def __save_info(self):
         with open('config.cfg', 'w') as f:
             js = {}
             js['status'] = self._status
-            js['free_task'] = self._free_task
-            js['done_task'] = self._done_task
+            js['free_task'] = list(self._free_task)
+            js['done_task'] = list(self._done_task)
             f.write(json.dumps(js))
 
     def __reset(self):
@@ -64,7 +64,6 @@ class TagsTask():
 
     def __get_tasks(self):
         if self._status == 'free':
-            self.__reset() 
             req = requests.get(self._task_url)
             js = req.json()
             for t in js.get('ids'):
@@ -75,23 +74,25 @@ class TagsTask():
         with open('tags.txt', 'a') as f:
             for t in self._free_task:
                 if t not in self._done_task:
+                    print 'fetching  %s' % t
                     tags = self.__get_tags(t)
                     f.write(json.dumps(tags) + '\n')
                     self._done_task.add(t)
                     
-    def __upload_task(self):
+    def __upload_tasks(self):
         tasks = {'type':'tags', 'data':[]} 
         with open('tags.txt', 'r') as f:
             for line in f:
                 tasks['data'].append(json.loads(line.rstrip('\n')))
 
-        data = json.dumps(tasks)
+        data = json.dumps(tasks, encoding='utf-8')
         headers = {'Content-type':'application/json;charset=utf8'}
+        print 'uploading...'
         while True:
             resp = requests.put(self._upload_url, data=data, headers=headers)
-            js = resp.json
+            js = resp.json()
             if js.get('code') == 200:
-                self._status = 'free'
+                self.__reset()
                 os.remove('tags.txt')
                 break
 

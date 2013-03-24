@@ -38,7 +38,7 @@ def make_task(task_type):
     rs = db.user_status.find({task_type:'free'}).limit(100)
     ids = []
     for cur in rs:
-#        db.user_status.update(cur, {task_type:'running'})
+        db.user_status.update(cur, {task_type:'running'})
         ids.append(cur['_id'])
 
     tk = {}
@@ -72,26 +72,26 @@ def id_books_upload(ary):
     for user in ary:
         books = []
         for r in user['books']:
-            books.append(r['id']) 
+            books.append(r['_id']) 
             db.books.insert(r) 
-        db.user_books.insert({'_id':user['id'], 'books':books}) 
-        db.user_status.update({'_id':user['id']}, {'tags':'done'})
+        db.user_books.insert({'_id':user['_id'], 'books':books}) 
+        db.user_status.update({'_id':user['_id']}, {'tags':'done'})
 
     return prepare_resp({'code':200, 'msg':'success'})
 
 def id_tags_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for r in ary:
-        db.user_tags.insert({'_id':r['id'], 'tags':r['tags']})
-        db.user_status.update({'_id':r['id']}, {'tags':'done'})
+        db.user_tags.insert({'_id':r['_id'], 'tags':r['tags']})
+        db.user_status.update({'_id':r['_id']}, {'tags':'done'})
 
     return prepare_resp({'code':200, 'msg':'success'}) 
 
 def id_followed_upload(ary):
     db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for r in ary:
-        db.user_followed.insert({'_id':r['id'], 'tags':r['tags']})
-        db.user_status.update({'_id':r['id']}, {'followed':'done'})
+        db.user_followed.insert({'_id':r['_id'], 'tags':r['tags']})
+        db.user_status.update({'_id':r['_id']}, {'followed':'done'})
 
     return prepare_resp({'code':200, 'msg':'success'})
 
