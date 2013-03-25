@@ -71,7 +71,7 @@ class BooksTask:
         books = []
         count = 100
         for i in range(500):
-            content = self._fetch(self._url % (user, count, i*count))
+            content = self._fetch.get(self._url % (user, count, i*count))
             js = json.loads(content)
             books.extend(js.get('collections'))
             if (i+1)*count >= js.get('total'):
