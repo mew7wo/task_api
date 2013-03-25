@@ -46,8 +46,8 @@ class BooksTask:
         with open('books_task_config.cfg', 'w') as f:
             cfg = {}
             cfg['status'] = self._status
-            cfg['free_tasks'] = self._free_tasks
-            cfg['done_tasks'] = self._done_tasks
+            cfg['free_tasks'] = list(self._free_tasks)
+            cfg['done_tasks'] = list(self._done_tasks)
             f.write(json.dumps(cfg))
 
     def __get_tasks(self):
@@ -71,7 +71,7 @@ class BooksTask:
         books = []
         count = 100
         for i in range(500):
-            content = self._fetch(self._url % (user, count, i))
+            content = self._fetch(self._url % (user, count, i*count))
             js = json.loads(content)
             books.extend(js.get('collections'))
             if (i+1)*count >= js.get('total'):

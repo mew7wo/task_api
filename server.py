@@ -42,7 +42,7 @@ def make_task(task_type):
         ids.append(cur['_id'])
 
     tk = {}
-    tk['ids'] = ids 
+    tk['tasks'] = ids 
     tk['type'] = task_type
     
     return tk

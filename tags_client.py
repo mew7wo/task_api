@@ -66,7 +66,7 @@ class TagsTask():
         if self._status == 'free':
             req = requests.get(self._task_url)
             js = req.json()
-            for t in js.get('ids'):
+            for t in js.get('tasks'):
                 self._free_task.add(t)
             self._status = 'running'
 
