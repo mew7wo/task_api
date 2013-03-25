@@ -41,7 +41,6 @@ class BooksTask:
                 self._free_tasks = set(cfg.get('free_tasks'))
                 self._done_tasks = set(cfg.get('free_tasks'))
 
-
     def __save_info(self):
         with open('books_task_config.cfg', 'w') as f:
             cfg = {}

@@ -23,10 +23,17 @@ def export_user_followed(db, filename):
         for r in cur:
             f.write(json.dumps(r).encode('utf-8')+'\n')
 
+def export_user_followed(db, filename):
+    with open(filename, 'w') as f:
+        cur = db.user_tags.find()
+        for r in cur:
+            f.write(json.dumps(r).encode('utf-8')+'\n')
+
 def main():
     db = Connection(host='localhost', port=27017).doubanbook
     export_user_status(db, 'user_status.dat')
     export_user_followed(db, 'user_followed.dat')
+    export_user_tags(db, 'user_tags.dat')
 
 
 if __name__ == '__main__':

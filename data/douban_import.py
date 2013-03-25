@@ -20,6 +20,12 @@ def import_user_followed(db, filename):
             user = json.loads(line.rstrip('\n').decode('utf-8'))
             db.user_followed.insert(user)
 
+def import_user_tags(db, filename):
+    with open(filename, 'r') as f:
+        for line in f:
+            user = json.loads(line.rstrip('\n').decode('utf-8'))
+            db.user_tags.insert(user)
+
 def import_user_books(db, filename):
     pass
 
