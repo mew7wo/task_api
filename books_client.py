@@ -23,7 +23,7 @@ class BooksTask:
         self._tasks_url = 'http://localhost:8080/id/books/'
         self._url = 'https://api.douban.com/v2/book/user/%s/collections?count=%d&start=%d'
         self._upload_url = 'http://localhost:8080/upload/'
-        logging.basicConfig(filename='books_error.log', filemod='a+', level=logging.ERROR)
+        logging.basicConfig(filename='user_books_error.log', filemod='a+', level=logging.ERROR)
 
     def __del__(self):
         self.__save_info()
@@ -34,12 +34,12 @@ class BooksTask:
         self._done_tasks = set()
 
     def __read_info(self):
-        if os.path.exist('books_task_config.cfg'):
+        if os.path.exists('books_task_config.cfg'):
             with open('books_task_config.cfg', 'r') as f:
                 cfg = json.loads(f.read())
                 self._status = cfg.get('status')
                 self._free_tasks = set(cfg.get('free_tasks'))
-                self._done_tasks = set(cfg.get('free_tasks'))
+                self._done_tasks = set(cfg.get('done_tasks'))
 
     def __save_info(self):
         with open('books_task_config.cfg', 'w') as f:
@@ -53,7 +53,8 @@ class BooksTask:
         if self._status == 'free':
             resp = requests.get(self._tasks_url)
             js = resp.json()
-            self._free_tasks = set(js.get('tasks'))
+            for t in js.get('tasks'):
+                self._free_tasks.add(t)
             self._status = 'running'
 
 
@@ -61,17 +62,20 @@ class BooksTask:
         with open('books.txt', 'a') as f:
             for t in self._free_tasks:
                 if t not in self._done_tasks:
+                    print 'fetch %s books....' % t
                     books = self.__get_books(t)
                     obj = {'_id':t, 'books':books}
                     f.write(json.dumps(obj) + '\n')
+                    self._done_tasks.add(t)
                      
 
     def __get_books(self, user):
         books = []
         count = 100
         for i in range(500):
-            content = self._fetch.get(self._url % (user, count, i*count))
-            js = json.loads(content)
+            url = self._url % (user, count, i*count)
+            content = self._fetch.get(url, sleeptime=2.0)
+            js = json.loads(content.decode('utf-8', 'ignore'))
             books.extend(js.get('collections'))
             if (i+1)*count >= js.get('total'):
                 break
@@ -106,3 +110,10 @@ class BooksTask:
                 break
             except Exception, e:
                 logging.error(repr(e))
+
+def main():
+    b = BooksTask()
+    b.run()
+
+if __name__ == '__main__':
+    main()

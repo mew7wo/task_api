@@ -35,7 +35,7 @@ def id_tags():
 
 def make_task(task_type):
     db = Connection(host='localhost', port=27017, network_timeout=20).doubanbook
-    rs = db.user_status.find({task_type:'free'}).limit(100)
+    rs = db.user_status.find({task_type:'free'}).limit(5000)
     ids = []
     for cur in rs:
         db.user_status.update(cur, {task_type:'running'})
