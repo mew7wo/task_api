@@ -58,7 +58,7 @@ class TagsTask():
         self._status = 'free'
 
     def __get_tags(self, user):
-        js = self._fetcher.get(self._url % user, sleeptime=1.8)
+        js = self._fetcher.get(self._url % user, sleeptime=2.1)
         obj = json.loads(js)
         return {'_id':user, 'tags':obj['tags']}
 

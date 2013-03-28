@@ -13,6 +13,7 @@ from flask import Response, request
 
 
 app = Flask(__name__)
+db = Connection().doubanbook
 
 @app.route('/test/', methods=['GET'])
 def test_page():
@@ -34,8 +35,7 @@ def id_tags():
     return prepare_resp(task)
 
 def make_task(task_type):
-    db = Connection(host='localhost', port=27017, network_timeout=20).doubanbook
-    rs = db.user_status.find({task_type:'free'}).limit(5000)
+    rs = db.user_status.find({task_type:'free'}).limit(100)
     ids = []
     for cur in rs:
         db.user_status.update(cur, {task_type:'running'})
@@ -68,30 +68,27 @@ def upload():
 
 
 def id_books_upload(ary):
-    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for user in ary:
         books = []
         for r in user['books']:
             books.append(r['_id']) 
             db.books.insert(r) 
         db.user_books.insert({'_id':user['_id'], 'books':books}) 
-        db.user_status.update({'_id':user['_id']}, {'tags':'done'})
+        db.user_status.update({'_id':user['_id']}, {'$set':{'books':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'})
 
 def id_tags_upload(ary):
-    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for r in ary:
         db.user_tags.insert({'_id':r['_id'], 'tags':r['tags']})
-        db.user_status.update({'_id':r['_id']}, {'tags':'done'})
+        db.user_status.update({'_id':r['_id']}, {'$set':{'tags':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'}) 
 
 def id_followed_upload(ary):
-    db = Connection(host='localhost', port=27017, network_timeout=10).doubanbook
     for r in ary:
         db.user_followed.insert({'_id':r['_id'], 'tags':r['tags']})
-        db.user_status.update({'_id':r['_id']}, {'followed':'done'})
+        db.user_status.update({'_id':r['_id']}, {'$set':{'followed':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'})
 

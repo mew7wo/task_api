@@ -23,7 +23,7 @@ def export_user_followed(db, filename):
         for r in cur:
             f.write(json.dumps(r).encode('utf-8')+'\n')
 
-def export_user_followed(db, filename):
+def export_user_tags(db, filename):
     with open(filename, 'w') as f:
         cur = db.user_tags.find()
         for r in cur:

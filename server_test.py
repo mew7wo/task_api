@@ -36,53 +36,53 @@ class ServerTestCase(unittest.TestCase):
 
 class ClientTestCase(unittest.TestCase):
     def test_tags(self):
-        req = requests.get('http://localhost:5000/id/tags/') 
+        req = requests.get('http://localhost:8080/id/tags/') 
         js = req.json()
-        self.assertEqual(js.has_key('ids'), True)
+        self.assertEqual(js.has_key('tasks'), True)
         self.assertEqual(js.has_key('type'), True)
         self.assertEqual(js.get('type'), 'tags')
         
     def test_books(self):
-        req = requests.get('http://localhost:5000/id/books/')
+        req = requests.get('http://localhost:8080/id/books/')
         js = req.json()
-        self.assertEqual(js.has_key('ids'), True)
+        self.assertEqual(js.has_key('tasks'), True)
         self.assertEqual(js.has_key('type'), True)
         self.assertEqual(js.get('type'), 'books')
 
     def test_followed(self):
-        req = requests.get('http://localhost:5000/id/followed/')
+        req = requests.get('http://localhost:8080/id/followed/')
         js = req.json()
-        self.assertEqual(js.has_key('ids'), True)
+        self.assertEqual(js.has_key('tasks'), True)
         self.assertEqual(js.has_key('type'), True)
         self.assertEqual(js.get('type'), 'followed')
 
     def test_upload_404(self):
         js = json.dumps({'test':'test'})
         headers = {'Content-Type':'application/json; charset=utf8'}
-        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:8080/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':404, 'msg':'not found'}))
 
         js = json.dumps({})
         headers = {'Content-Type':'application/json; charset=utf8'}
-        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:8080/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':404, 'msg':'not found'}))
 
     def test_upload_tags(self):
         js = json.dumps({'type':'tags', 'data':[]}) 
         headers = {'Content-Type':'application/json; chaset=utf8'}
-        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:8080/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':200, 'msg':'success'}))
 
     def test_upload_followed(self):
         js = json.dumps({'type':'followed', 'data':[]}) 
         headers = {'Content-Type':'application/json; charset=utf8'}
-        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:8080/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':200, 'msg':'success'}))
 
     def test_upload_books(self):
         js = json.dumps({'type':'books', 'data':[]})
         headers = {'Content-Type':'application/json; charset=utf8'}
-        req = requests.put('http://localhost:5000/upload/', data=js, headers=headers)
+        req = requests.put('http://localhost:8080/upload/', data=js, headers=headers)
         self.assertEqual(req.text, json.dumps({'code':200, 'msg':'success'}))
 
 
