@@ -87,7 +87,7 @@ def id_tags_upload(ary):
 
 def id_followed_upload(ary):
     for r in ary:
-        db.user_followed.insert({'_id':r['_id'], 'tags':r['tags']})
+        db.user_followed.insert({'_id':r['_id'], 'followed':r['followed']})
         db.user_status.update({'_id':r['_id']}, {'$set':{'followed':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'})

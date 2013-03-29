@@ -9,10 +9,11 @@
 
 import os
 import json
-import request
+import requests
+import logging
 from followed import Followed
 from fetch import Fetch
-from paser import user_followed_parser
+from parser import user_followed_parser
 
 
 class FollowedTask:
@@ -35,7 +36,7 @@ class FollowedTask:
         self._done_tasks = set()
 
     def __read_info(self):
-        if os.path.exist('user_followed_config.cfg'):
+        if os.path.exists('user_followed_config.cfg'):
             with open('user_followed_config.cfg', 'r') as f:
                 cfg = json.loads(f.read())
                 self._status = cfg.get('status')
@@ -51,12 +52,13 @@ class FollowedTask:
             f.write(json.dumps(cfg))
 
     def __get_followed(self, user):
-        page = self._fetch.get(self._url % user)
+        page = self._fetch.get(self._url % user, sleeptime=2.1)
         followed = user_followed_parser(page)
         return followed
 
     def __get_tasks(self):
         if self._status == 'free':
+            print 'get tasks.....'
             resp = requests.get(self._tasks_url)
             js = resp.json() 
             self._free_tasks = js.get('tasks')    
@@ -66,6 +68,7 @@ class FollowedTask:
         with open('followed.txt', 'a') as f:
             for t in self._free_tasks:
                 if t not in self._done_tasks:
+                    print 'fetching %s' % t
                     obj = {'_id':t}
                     obj['followed'] = self.__get_followed(t)
                     f.write(json.dumps(obj) + '\n')
@@ -81,10 +84,11 @@ class FollowedTask:
         data = json.dumps(tasks)
         headers = {'Content-type':'application/json; charset=utf8'}
         while True:
+            print 'uploading '
             resp = requests.put(self._upload_url, data=data, headers=headers)
             js = resp.json()
             if js.get('code') == 200:
-                os.remove('user_followed_config.cfg')
+                os.remove('followed.txt')
                 self.__reset()
                 break
             
@@ -98,3 +102,10 @@ class FollowedTask:
                 break
             except Exception, e:
                 logging.error(repr(e))
+
+def main():
+    f = FollowedTask()
+    f.run()
+
+if __name__ == '__main__':
+    main()

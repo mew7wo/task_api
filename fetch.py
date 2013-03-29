@@ -22,7 +22,7 @@ class Fetch(object):
     def __init__(self, username, pw):
         if self.__class__.opener == None:
             cj = cookielib.CookieJar()
-            http_handler = urllib2.HTTPHandler(debuglevel=1)
+            http_handler = urllib2.HTTPHandler()
             self.__class__.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), http_handler)
 
         self._username = username

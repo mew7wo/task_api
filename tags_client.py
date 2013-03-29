@@ -14,7 +14,7 @@ from fetch import Fetch
 
 class TagsTask():
     def __init__(self):
-        logging.basicConfig(filename='client_error.log', filemode='a+', level=logging.ERROR)
+        logging.basicConfig(filename='tags_error.log', filemode='a+', level=logging.ERROR)
         self.__read_info()
         self._fetcher = Fetch(username='1398882026@qq.com', pw='liumengchao')
         self._url = 'https://api.douban.com/v2/book/user/%s/tags?count=100'
