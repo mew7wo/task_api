@@ -51,6 +51,7 @@ class BooksTask:
 
     def __get_tasks(self):
         if self._status == 'free':
+            print 'getting task....'
             resp = requests.get(self._tasks_url)
             js = resp.json()
             for t in js.get('tasks'):
@@ -62,7 +63,7 @@ class BooksTask:
         with open('books.txt', 'a') as f:
             for t in self._free_tasks:
                 if t not in self._done_tasks:
-                    print 'fetch %s books....' % t
+                    print 'fetch %s....' % t
                     books = self.__get_books(t)
                     obj = {'_id':t, 'books':books}
                     f.write(json.dumps(obj) + '\n')
@@ -72,9 +73,9 @@ class BooksTask:
     def __get_books(self, user):
         books = []
         count = 100
-        for i in range(500):
+        for i in range(20):
             url = self._url % (user, count, i*count)
-            content = self._fetch.get(url, sleeptime=2.0)
+            content = self._fetch.get(url, sleeptime=2.3)
             js = json.loads(content.decode('utf-8', 'ignore'))
             books.extend(js.get('collections'))
             if (i+1)*count >= js.get('total'):
@@ -91,6 +92,7 @@ class BooksTask:
                 tasks['data'].append(obj)
 
         while True:
+            print 'uploading task ....'
             data = json.dumps(tasks)
             headers = {'Content-type':'application/json; charset=utf8'}
             resp = requests.put(self._upload_url, data=data, headers=headers)

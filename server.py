@@ -35,7 +35,7 @@ def id_tags():
     return prepare_resp(task)
 
 def make_task(task_type):
-    rs = db.user_status.find({task_type:'free'}).limit(100)
+    rs = db.user_status.find({task_type:'free'}).limit(10)
     ids = []
     for cur in rs:
         db.user_status.update(cur, {task_type:'running'})
@@ -71,8 +71,17 @@ def id_books_upload(ary):
     for user in ary:
         books = []
         for r in user['books']:
-            books.append(r['_id']) 
-            db.books.insert(r) 
+            obj = {}
+            obj['_id'] = r['book_id']
+            obj['status'] = r['status']
+            obj['updated'] = r['updated']
+            books.append(obj) 
+            
+            book = r['book']
+            book['_id'] = book['id']
+            del book['id']
+            db.book.insert(book) 
+
         db.user_books.insert({'_id':user['_id'], 'books':books}) 
         db.user_status.update({'_id':user['_id']}, {'$set':{'books':'done'}})
 
