@@ -21,31 +21,45 @@ def test_page():
 
 @app.route('/id/followed/', methods=['GET'])
 def id_followed():
-    task = make_task('followed')
-    return prepare_resp(task)
+    cur = db.user_status.find({'followed':'free'}).limit(100)
+    users = []
+    for r in cur:
+        db.user_status.update(r['_id'], {'$set':{'followed':'running'}})
+        users.append(r['_id'])
+
+    tasks = {}
+    tasks['type'] = 'followed'
+    tasks['tasks'] = users
+
+    return prepare_resp(tasks)
     
 @app.route('/id/books/', methods=['GET'])
 def id_books():
-    task = make_task('books')
-    return prepare_resp(task)
+    cur = db.user_status.find({'followed':'done', 'tags':'done', 'books':'free'}).limit(10)
+    users = []
+    for r in cur:
+        db.user_status.update(r['_id'], {'$set':{'books':'running'}})
+        users.append(r['_id'])
+
+    tasks = {}
+    tasks['type'] = 'books'
+    tasks['tasks'] = users
+
+    return prepare_resp(tasks)
 
 @app.route('/id/tags/', methods=['GET'])
 def id_tags(): 
-    task = make_task('tags')
-    return prepare_resp(task)
+    cur = db.user_status.find({'followed':'done', 'tags':'free'}).limit(100)
+    users = []
+    for r in cur:
+        db.user_status.update(r['_id'], {'$set':{'tags':'running'}})
+        users.append(r['_id'])
 
-def make_task(task_type):
-    rs = db.user_status.find({task_type:'free'}).limit(10)
-    ids = []
-    for cur in rs:
-        db.user_status.update(cur, {task_type:'running'})
-        ids.append(cur['_id'])
+    tasks = {}
+    tasks['type'] = 'tags'
+    tasks['tasks'] = users
 
-    tk = {}
-    tk['tasks'] = ids 
-    tk['type'] = task_type
-    
-    return tk
+    return prepare_resp(tasks)
 
 
 def prepare_resp(resp):
