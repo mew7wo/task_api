@@ -96,7 +96,7 @@ def id_books_upload(ary):
             book = r['book']
             book['_id'] = book['id']
             del book['id']
-            mongo.db.book.insert(book) 
+            mongo.db.book.save(book) 
 
         mongo.db.user_books.insert({'_id':user['_id'], 'books':books}) 
         mongo.db.user_status.update({'_id':user['_id']}, {'$set':{'books':'done'}})
