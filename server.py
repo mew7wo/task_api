@@ -7,13 +7,15 @@
 
 
 import json
-from pymongo import Connection
 from flask import Flask, jsonify
 from flask import Response, request
+from flask.ext.pymongo import PyMongo
 
 
 app = Flask(__name__)
-db = Connection().doubanbook
+
+app.config['MONGO_DBNAME'] = 'doubanbook'
+mongo = PyMongo(app)
 
 @app.route('/test/', methods=['GET'])
 def test_page():
@@ -21,10 +23,10 @@ def test_page():
 
 @app.route('/id/followed/', methods=['GET'])
 def id_followed():
-    cur = db.user_status.find({'followed':'free'}).limit(100)
+    cur = mongo.db.user_status.find({'followed':'free'}).limit(100)
     users = []
     for r in cur:
-        db.user_status.update(r['_id'], {'$set':{'followed':'running'}})
+        mongo.db.user_status.update(r, {'$set':{'followed':'running'}})
         users.append(r['_id'])
 
     tasks = {}
@@ -35,10 +37,10 @@ def id_followed():
     
 @app.route('/id/books/', methods=['GET'])
 def id_books():
-    cur = db.user_status.find({'followed':'done', 'tags':'done', 'books':'free'}).limit(10)
+    cur = mongo.db.user_status.find({'followed':'done', 'tags':'done', 'books':'free'}).limit(10)
     users = []
     for r in cur:
-        db.user_status.update(r['_id'], {'$set':{'books':'running'}})
+        mongo.db.user_status.update(r, {'$set':{'books':'running'}})
         users.append(r['_id'])
 
     tasks = {}
@@ -49,10 +51,10 @@ def id_books():
 
 @app.route('/id/tags/', methods=['GET'])
 def id_tags(): 
-    cur = db.user_status.find({'followed':'done', 'tags':'free'}).limit(100)
+    cur = mongo.db.user_status.find({'followed':'done', 'tags':'free'}).limit(100)
     users = []
     for r in cur:
-        db.user_status.update(r['_id'], {'$set':{'tags':'running'}})
+        mongo.db.user_status.update(r, {'$set':{'tags':'running'}})
         users.append(r['_id'])
 
     tasks = {}
@@ -94,24 +96,24 @@ def id_books_upload(ary):
             book = r['book']
             book['_id'] = book['id']
             del book['id']
-            db.book.insert(book) 
+            mongo.db.book.insert(book) 
 
-        db.user_books.insert({'_id':user['_id'], 'books':books}) 
-        db.user_status.update({'_id':user['_id']}, {'$set':{'books':'done'}})
+        mongo.db.user_books.insert({'_id':user['_id'], 'books':books}) 
+        mongo.db.user_status.update({'_id':user['_id']}, {'$set':{'books':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'})
 
 def id_tags_upload(ary):
     for r in ary:
-        db.user_tags.insert({'_id':r['_id'], 'tags':r['tags']})
-        db.user_status.update({'_id':r['_id']}, {'$set':{'tags':'done'}})
+        mongo.db.user_tags.insert({'_id':r['_id'], 'tags':r['tags']})
+        mongo.db.user_status.update({'_id':r['_id']}, {'$set':{'tags':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'}) 
 
 def id_followed_upload(ary):
     for r in ary:
-        db.user_followed.insert({'_id':r['_id'], 'followed':r['followed']})
-        db.user_status.update({'_id':r['_id']}, {'$set':{'followed':'done'}})
+        mongo.db.user_followed.insert({'_id':r['_id'], 'followed':r['followed']})
+        mongo.db.user_status.update({'_id':r['_id']}, {'$set':{'followed':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'})
 
@@ -120,5 +122,5 @@ def id_404_upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=9090, debug=True)
 
