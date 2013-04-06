@@ -96,6 +96,14 @@ def id_books_upload(ary):
             book = r['book']
             book['_id'] = book['id']
             del book['id']
+
+            tags = []
+            for t in book['tags']:
+                t['title'] = t['title'].lower()
+                t['name'] = t['name'].lower()
+                tags.append(t)
+
+            book['tags'] = tags
             mongo.db.book.save(book) 
 
         mongo.db.user_books.insert({'_id':user['_id'], 'books':books}) 
@@ -105,7 +113,12 @@ def id_books_upload(ary):
 
 def id_tags_upload(ary):
     for r in ary:
-        mongo.db.user_tags.insert({'_id':r['_id'], 'tags':r['tags']})
+        tags = []
+        for t in r['tags']:
+            t['title'] = t['title'].lower()
+            t['name'] = t['name'].lower()
+            tags.append(t)
+        mongo.db.user_tags.insert({'_id':r['_id'], 'tags':tags})
         mongo.db.user_status.update({'_id':r['_id']}, {'$set':{'tags':'done'}})
 
     return prepare_resp({'code':200, 'msg':'success'}) 
