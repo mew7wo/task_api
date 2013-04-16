@@ -1,0 +1,7 @@
+<uwsgi>
+    <socket>127.0.0.1:5000</socket>
+    <module>main</module>
+    <master />
+    <pythonpath>/home/mew7wo/python/douban_api</pythonpath>
+    <processes>2</processes>
+</uwsgi>
